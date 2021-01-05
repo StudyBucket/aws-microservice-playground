@@ -1,5 +1,7 @@
 // app.js
 
+const APP_URL = 'https://unc1e0iqwa.execute-api.eu-central-1.amazonaws.com/production/'
+
 const express = require('express')
 const sls = require('serverless-http')
 const app = express()
@@ -36,22 +38,25 @@ app.get('/', async (req, res, next) => {
   })
 });
 
-app.post('/upload', async (req, res, next) => {
-  // const response = JSON.stringify(req.body);
-  // res.status(200).send(response)
-  // res.status(200).send({ content: req.body.content, fileName: req.body.fileName })
-  res.status(200).send(
-    wrapInHtml(`
+app.post('/', async (req, res, next) => {
+  try {
+    const msg = await uploadTextFile(req.body.content, req.body.fileName)
+    res.status(200).send(
+      wrapInHtml(`
       <h1>Success!</h1>
-      <p>${uploadTextFile(req.body.content, req.body.fileName)}</p>
-      <a href="/">→ show files</a>
+      <p>${msg}</p>
+      <a href="${APP_URL}">→ show files</a>
     `)
-  )
+    )
+  } catch (err) {
+    res.status(200).send(err)
+  }
+
 })
 
 /* functions */
 
-const uploadTextFile = (content, fileName) => {
+const uploadTextFile = async (content, fileName) => {
   const params = {
     Bucket: BUCKET_NAME,
     Key: fileName + '.txt',
@@ -92,7 +97,7 @@ const getListOfObjects = () => {
 
 const getForm = () => {
   return `
-    <form action="/upload" method="post">
+    <form action="${APP_URL}" method="POST">
       <label for="fileName">File Name:</label><br>
       <input type="text" id="fileName" name="fileName"><br>
       <label for="content">Content:</label><br>
