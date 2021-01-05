@@ -14,9 +14,9 @@ app.use(bodyParser.urlencoded({
 var AWS = require('aws-sdk')
 AWS.config.update({ region: 'eu-central-1' })
 
-const ID = 'AKIAQFMFCWDX6NAD7VNG';
-const SECRET = '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';
-const BUCKET_NAME = 'my.pretty.random.bucket';
+const ID = process.env.ID;
+const SECRET = process.env.SECRET;
+const BUCKET_NAME = process.env.BUCKET;
 
 const s3 = new AWS.S3({
   accessKeyId: ID,
